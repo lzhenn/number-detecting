@@ -1,0 +1,123 @@
+<html> 
+	<head> 
+		<title>Check</title> 
+		<style>
+			body { width:200; height:230; 				
+			background:url(back2.jpg); 
+			margin:0;
+			padding:7px;
+			font-size:12px} 
+		</style> 
+        <script language=javascript src='acc.js'></script>
+        <script type="text/javascript">
+        function html2txt(str,noEnter){
+            var html = str;
+            html = html.replace(/<!--[\s\S]*?-->/img, "");//注释
+            html = html.replace(/<[\/]*table[^>]*>/img, "\n");//table
+            html = html.replace(/<[\/]*tbody[^>]*>/img, "");//tbody
+            html = html.replace(/<[\/]*tr[^>]*>/img, "\n");//tr
+            html = html.replace(/<[\/]*td[^>]*>/img, "\n");//td
+            html = html.replace(/<[\/]*p[^>]*>/img, "\n");//p
+            html = html.replace(/<[\/]*a[^>]*>/img, "\n");//a
+            html = html.replace(/<[\/]*col[^>]*>/img, "\n");//col
+            html = html.replace(/<[\/]*br[^>]*>/img, "\n");//br
+            html = html.replace(/<[\/]*[^>]*>/img, "\n");//
+            html = html.replace(/<[\/]*span[^>]*>/img, "");//span
+            html = html.replace(/<[\/]*center[^>]*>/img, "");//center
+            html = html.replace(/<[\/]*ul[^>]*>/img, "");//ul
+            html = html.replace(/<[\/]*i[^>]*>/img, "");//i
+            html = html.replace(/<[\/]*li[^>]*>/img, "");//li
+            html = html.replace(/<[\/]*b[^>]*>/img, "");//b
+            html = html.replace(/<[\/]*hr[^>]*>/img, "");//hr
+            html = html.replace(/<[\/]*h\d+[^>]*>/img, "");//h1,2,3,4,5,6
+            html = html.replace(/<STYLE[\s\S]*?<\/STYLE>/img, "");//样式
+            html = html.replace(/<script[\s\S]*?<\/script>/img, "");//引用的脚本
+            //html = html.replace(/<[\?!A-Za-z\][^><]*>/img, "");alert("str:"+html)
+            html = html.replace(/\r/img, "");//换行
+            html = html.replace(/\n/img, "\r\n");//回车
+            html = html.replace(/[　|\s]*\r\n[　|\s]*\r\n/img, "\r\n");
+            //html = reg.replace(html,@"(\r\n)[^ 　]/img,"$1");
+            html = formatHtml(html);
+            if(noEnter){
+               html = html.replace(/\r\n/img, "");
+               html = html.replace(/\n/img, "");
+               html = html.replace(/\r/img, "");
+            }
+            return (html);
+        } 
+            
+        function gb2utf8(data){ 
+            var glbEncode = []; 
+            gb2utf8_data = data; 
+            execScript("gb2utf8_data = MidB(gb2utf8_data, 1)", "VBScript"); 
+            var t=escape(gb2utf8_data).replace(/%u/g,"").replace(/(.{2})(.{2})/g,"%$2%$1").replace(/%([A-Z].)%(.{2})/g,"@$1$2"); 
+            t=t.split("@"); 
+            var i=0,j=t.length,k; 
+            while(++i<j) { 
+                k=t[i].substring(0,4); 
+                if(!glbEncode[k])  
+                { 
+                    gb2utf8_char = eval("0x"+k); 
+                    execScript("gb2utf8_char = Chr(gb2utf8_char)", "VBScript"); 
+                    glbEncode[k]=escape(gb2utf8_char).substring(1,6); 
+                } 
+                t[i]=glbEncode[k]+t[i].substring(4); 
+            } 
+            gb2utf8_data = gb2utf8_char = null; 
+            return unescape(t.join("%")); 
+        } 
+		function loadXMLDoc()
+			{
+				var xmlhttp,start = 0,end = 0,cont="",cont1 = "",cont2="";
+				if (window.XMLHttpRequest)
+				  {// code for IE7+, Firefox, Chrome, Opera, Safari
+					xmlhttp=new XMLHttpRequest();
+				  }
+				else
+				  {// code for IE6, IE5
+					xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+				  }
+				xmlhttp.onreadystatechange=function()
+			  {
+				if (xmlhttp.readyState==4 && xmlhttp.status==200)
+				{
+					start=xmlhttp.responseText.indexOf("tw14b");
+					
+					cont=gb2utf8(xmlhttp.responseBody);
+                    //cont=cont;
+					//cont=html2txt(cont,false);                 								//获取总字串
+					//start=cont.indexOf("时刻")+6;
+					cont1=cont.slice(start+36,cont.length);
+                    end=cont1.indexOf("</div>");
+                    cont1=cont1.slice(0,end);
+                    
+                    start=cont.indexOf("c11");
+                    cont2=cont.slice(start+5,cont.length);
+                    end=cont2.indexOf("</td>");
+                    cont2=cont2.slice(0,end);
+					//cont=cont.slice(0,start)+"<br>"+cont2;
+					document.getElementById("myDiv").innerHTML=cont1+"<br/><br/>"+cont2;
+				}
+				else
+					{document.getElementById("myDiv").innerHTML="<p>"+acc[0]+"</p>"}
+			  }
+			xmlhttp.open("GET","./aaa.xml",false);
+			xmlhttp.setRequestHeader("If-Modified-Since","0");
+			xmlhttp.send();
+			}
+		</script>
+	</head> 
+	<body>
+		<div id="myDiv"></div>
+		<script>
+            new_element=document.createElement("script");
+            new_element.setAttribute("type","text/javascript");
+            new_element.setAttribute("src","./acc.js");
+            document.body.appendChild(new_element);
+			loadXMLDoc();
+			function reflesh(){document.location.reload();}
+			setTimeout("reflesh()",3579000);//刷新时长3600s
+		</script>
+        <img src="">
+	</body> 
+</html>
